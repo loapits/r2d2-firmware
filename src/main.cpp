@@ -1,12 +1,18 @@
 #include "Arduino.h"
 
 char incomingbyte; // переменная для приема данных
-const int A_IA = 4;
-const int A_IB = 5;
-const int B_IA = 6;
-const int B_IB = 7;
+const int AIA = 4;
+const int AIB = 5;
+const int BIA = 6;
+const int BIB = 7;
 const int TriggerPin = 8;
 const int EchoPin = 9;
+const int LedRed = 10;
+const int LedBlue = 11;
+
+const int HeadBIA = 2;
+const int HeadBIB = 3;
+
 
 bool isAuto = false;
 long Duration = 0;
@@ -16,15 +22,24 @@ void setup() {
   pinMode(TriggerPin, OUTPUT);
   pinMode(EchoPin, INPUT);
 
-  pinMode(A_IA, OUTPUT);
-  digitalWrite(A_IA, HIGH);
-  pinMode(A_IB, OUTPUT);
-  digitalWrite(A_IB, HIGH);
-  pinMode(B_IA, OUTPUT);
-  digitalWrite(B_IA, HIGH);
-  pinMode(B_IB, OUTPUT);
-  digitalWrite(B_IB, HIGH);
+  pinMode(LedBlue, OUTPUT);
+  digitalWrite(LedBlue, LOW);
+  pinMode(LedRed, OUTPUT);
+  digitalWrite(LedRed, LOW);
 
+  pinMode(HeadBIA, OUTPUT);
+  digitalWrite(HeadBIA, HIGH);
+  pinMode(HeadBIB, OUTPUT);
+  digitalWrite(HeadBIB, HIGH);
+
+  pinMode(AIA, OUTPUT);
+  digitalWrite(AIA, HIGH);
+  pinMode(AIB, OUTPUT);
+  digitalWrite(AIB, HIGH);
+  pinMode(BIA, OUTPUT);
+  digitalWrite(BIA, HIGH);
+  pinMode(BIB, OUTPUT);
+  digitalWrite(BIB, HIGH);
 }
 
 long Distance(long time) {
@@ -35,49 +50,68 @@ long Distance(long time) {
 }
 
 void go_forward() {
-  digitalWrite(A_IA, LOW);
-  digitalWrite(A_IB, HIGH);
+  digitalWrite(AIA, LOW);
+  digitalWrite(AIB, HIGH);
 
-  digitalWrite(B_IA, LOW);
-  digitalWrite(B_IB, HIGH);  
+  digitalWrite(BIA, LOW);
+  digitalWrite(BIB, HIGH);  
 }
 
 void go_back() {
-  digitalWrite(A_IA, HIGH);
-  digitalWrite(A_IB, LOW);
+  digitalWrite(AIA, HIGH);
+  digitalWrite(AIB, LOW);
   
-  digitalWrite(B_IA, HIGH);
-  digitalWrite(B_IB, LOW);
+  digitalWrite(BIA, HIGH);
+  digitalWrite(BIB, LOW);
 }
 
 void go_rigth() {
-  digitalWrite(A_IA, LOW);
-  digitalWrite(A_IB, LOW);
+  digitalWrite(AIA, LOW);
+  digitalWrite(AIB, LOW);
   
-  digitalWrite(B_IA, HIGH);
-  digitalWrite(B_IB, LOW);
+  digitalWrite(BIA, HIGH);
+  digitalWrite(BIB, LOW);
 }
 
 void go_left() {
-  digitalWrite(A_IA, LOW);
-  digitalWrite(A_IB, HIGH);
+  digitalWrite(AIA, LOW);
+  digitalWrite(AIB, HIGH);
 
-  digitalWrite(B_IA, LOW);
-  digitalWrite(B_IB, LOW);
+  digitalWrite(BIA, LOW);
+  digitalWrite(BIB, LOW);
 }
 
 void stop_robot() {
+  digitalWrite(AIA, LOW);
+  digitalWrite(AIB, LOW);
 
-  digitalWrite(A_IA, LOW);
-  digitalWrite(A_IB, LOW);
-
-  digitalWrite(B_IA, LOW);
-  digitalWrite(B_IB, LOW);
+  digitalWrite(BIA, LOW);
+  digitalWrite(BIB, LOW);
 }
+
+void right_spin_head() {  
+  digitalWrite(HeadBIA, LOW);
+  digitalWrite(HeadBIB, HIGH);
+}
+
+void left_spin_head() {
+  digitalWrite(HeadBIA, HIGH);
+  digitalWrite(HeadBIB, LOW);
+}
+
+void stop_spin_head() {
+  digitalWrite(HeadBIA, LOW);
+  digitalWrite(HeadBIB, LOW);
+}
+
+
 
 //Основной цикл программы
 void loop() {
   if (Serial.available() > 0) {
+    digitalWrite(LedBlue, HIGH);
+    digitalWrite(LedRed, HIGH);
+    
     incomingbyte = Serial.read();
 
     if (incomingbyte == '0') {
@@ -111,6 +145,33 @@ void loop() {
 
     if (incomingbyte == '6') {
       isAuto = true;
+    }
+    
+    if (incomingbyte == '7') {
+      digitalWrite(LedBlue, HIGH);
+      digitalWrite(LedRed, LOW);
+    }
+
+    if (incomingbyte == '8') {
+      digitalWrite(LedBlue, LOW);
+      digitalWrite(LedRed, HIGH);
+    }
+    
+    if (incomingbyte == '9') {
+      digitalWrite(LedBlue, HIGH);
+      digitalWrite(LedRed, HIGH);
+    }
+
+    if (incomingbyte == 'a') {
+      right_spin_head();
+    }
+    
+    if (incomingbyte == 'b') {
+      left_spin_head();
+    }
+
+    if (incomingbyte == 'c') {
+      stop_spin_head();
     }
   } 
 
