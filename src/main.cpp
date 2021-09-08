@@ -2,10 +2,9 @@
 #include <Tone.h>
 #include <Stepper.h>
 
-
 // freePins =  a1, a3;
 
-char incomingbyte; // переменная для приема данных
+String incomingbyte; // переменная для приема данных
 const int leftMotor1p1 = 5;
 const int leftMotor1p2 = 4;
 const int leftMotor1p3 = 3;
@@ -33,6 +32,11 @@ const int tonePin = 9;
 bool isAuto = false;
 long duration = 0;
 
+const int stepsPerRev = 32;
+Stepper head(stepsPerRev, headMotor1, headMotor2, headMotor3, headMotor4);
+Stepper leftLeg(stepsPerRev, leftMotor1p1, leftMotor1p2, leftMotor1p3, leftMotor1p4);
+Stepper rightLeg(stepsPerRev, rightMotor1p1, rightMotor1p2, rightMotor1p3, rightMotor1p4);
+
 void setup() {
   Serial.begin(9600);
   pinMode(triggerPin, OUTPUT);
@@ -52,36 +56,49 @@ long Distance(long time) {
   return distanceCalc;
 }
 
-void go_forward() {
-
+void goForward() {
+  leftLeg.setSpeed(700);
+  leftLeg.step(stepsPerRev / 4);
+  rightLeg.setSpeed(700);
+  rightLeg.step(stepsPerRev / 4);
 }
 
-void go_back() {
-
+void goBack() {
+  leftLeg.setSpeed(700);
+  leftLeg.step(-stepsPerRev / 4);
+  rightLeg.setSpeed(700);
+  rightLeg.step(-stepsPerRev / 4);
 } 
 
-void go_rigth() {
-
+void goRigth() {
+  leftLeg.setSpeed(700);
+  leftLeg.step(stepsPerRev / 4);
+  rightLeg.setSpeed(0);
 }
 
-void go_left() {
-
+void goLeft() {
+  rightLeg.setSpeed(700);
+  rightLeg.step(stepsPerRev / 4);
+  leftLeg.setSpeed(0);
 }
 
-void stop_robot() {
-
+void stopRobot() {
+  leftLeg.setSpeed(0);
+  leftLeg.setSpeed(0);
 }
 
-void right_spin_head() {  
-
+void rightSpinHead() {  
+  leftLeg.setSpeed(700);
+  leftLeg.step(stepsPerRev / 4);
 }
 
-void left_spin_head() {
-
+void leftSpinHead() {
+  leftLeg.setSpeed(70);
+  leftLeg.step(stepsPerRev / 4);
 }
 
-void stop_spin_head() {
-
+void stopSpinHead() {
+  head.setSpeed(0);
 }
 
 //Основной цикл программы
@@ -92,102 +109,102 @@ void loop() {
     
     incomingbyte = Serial.read();
 
-    if (incomingbyte == '0') {
+    if (incomingbyte == "0") {
       isAuto = false;
-      // stop robot
+      stopRobot();
     }
 
-    if (incomingbyte == '1') {
+    if (incomingbyte == "1") {
       isAuto = false;
-      //go forward
+      goForward();
     }
 
-    if (incomingbyte == '2') {
+    if (incomingbyte == "2") {
       isAuto = false;
-      // go back
+      goBack();
     }
 
-    if (incomingbyte == '3') {
-      // go rigth
+    if (incomingbyte == "3") {
       isAuto = false;
+      goRigth();
     }
     
-    if (incomingbyte == '4') {
+    if (incomingbyte == "4") {
       isAuto = false;
-      // go left
+      goLeft();
     }
 
-    if (incomingbyte == 'd') {
+    if (incomingbyte == "d") {
       // crying song
     }
 
-    if (incomingbyte == 'e') {
+    if (incomingbyte == "e") {
       //question song
     }
 
-    if (incomingbyte == 'f') {
+    if (incomingbyte == "f") {
       // surprise song
     }
 
-    if (incomingbyte == 'g') {
+    if (incomingbyte == "g") {
       // quote song
     }
 
-    if (incomingbyte == 'h') {
+    if (incomingbyte == "h") {
       // offer song
     }
 
-    if (incomingbyte == 'i') {
+    if (incomingbyte == "i") {
       // broken song
     }
 
-    if (incomingbyte == '6') {
+    if (incomingbyte == "6") {
       // autopilot
       isAuto = true;
     }
     
-    if (incomingbyte == '7') {
+    if (incomingbyte == "7") {
       // blue light
     }
 
-    if (incomingbyte == '8') {
+    if (incomingbyte == "8") {
       // Red light
     }
     
-    if (incomingbyte == '9') {
+    if (incomingbyte == "9") {
       // led and blue light
     }
 
-    if (incomingbyte == 'a') {
-      // Spin head to right
+    if (incomingbyte == "a") {
+      rightSpinHead();
     }
     
-    if (incomingbyte == 'b') {
-      // spin head to left
+    if (incomingbyte == "b") {
+      leftSpinHead();
     }
 
-    if (incomingbyte == 'c') {
-      // stop spinning of the head 
+    if (incomingbyte == "c") {
+      stopSpinHead();
     }
   } 
 
   if (isAuto == true) {
-    // digitalWrite(TriggerPin, LOW);
-    // delayMicroseconds(2);
-    // digitalWrite(TriggerPin, HIGH);
-    // delayMicroseconds(10);
-    // digitalWrite(TriggerPin, LOW);
+    digitalWrite(triggerPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(triggerPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(triggerPin, LOW);
     
-    // duration = pulseIn(echoPin, HIGH);
-    // long distance_cm = Distance(duration);
+    duration = pulseIn(echoPin, HIGH);
+    long distanceCm = Distance(duration);
 
-    // if (distance_cm < 50) {
-    //   go_rigth();
-    //   delay(100);
-    //   go_forward();
-    // }
-    // go_forward();
+    if (distanceCm < 50) {
+      goRigth();
+      delay(100);
+      goForward();
+    }
 
-    // delay(1000);
+    goForward();
+    delay(1000);
   }
 }
