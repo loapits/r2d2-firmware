@@ -2,43 +2,37 @@
 #include <Tone.h>
 #include <Stepper.h>
 
-// freePins =  a1, a3;
+char incomingbyte;
 
-String incomingbyte; // переменная для приема данных
-const int leftMotor1p1 = 5;
-const int leftMotor1p2 = 4;
-const int leftMotor1p3 = 3;
-const int leftMotor1p4 = 2;
-
-const int rightMotor1p1 = A7;
-const int rightMotor1p2 = A6;
-const int rightMotor1p3 = A5;
-const int rightMotor1p4 = A4;
+const int Aia = 9;
+const int Aib = 10;
+const int Bia = 11;
+const int Bib = 12;
 
 const int headMotor1 = A0;
-const int headMotor2 = 13;
+const int headMotor2 = 13; 
 const int headMotor3 = 12;
 const int headMotor4 = 11;
 
 const int ledRed = 6;
 const int ledBlue = A2;
 
-const int triggerPin = 7;
-const int echoPin = 8;
+const int triggerPin = 2;
+const int echoPin = 3;
 
 const int tonePin = 9;
 
-
-bool isAuto = false;
 long duration = 0;
 
 const int stepsPerRev = 32;
+
 Stepper head(stepsPerRev, headMotor1, headMotor2, headMotor3, headMotor4);
-Stepper leftLeg(stepsPerRev, leftMotor1p1, leftMotor1p2, leftMotor1p3, leftMotor1p4);
-Stepper rightLeg(stepsPerRev, rightMotor1p1, rightMotor1p2, rightMotor1p3, rightMotor1p4);
 
 void setup() {
   Serial.begin(9600);
+  Serial.begin(9600);
+
+
   pinMode(triggerPin, OUTPUT);
   pinMode(echoPin, INPUT);
 
@@ -46,165 +40,199 @@ void setup() {
   digitalWrite(ledBlue, LOW);
   pinMode(ledRed, OUTPUT);
   digitalWrite(ledRed, LOW);
-}
 
-// Calculate distance
-long Distance(long time) {
-  long distanceCalc;
-
-  distanceCalc = ((time * 0.034) / 2);
-  return distanceCalc;
+  pinMode(Aia, OUTPUT);
+  digitalWrite(Aia, LOW);
+  pinMode(Aib, OUTPUT);
+  digitalWrite(Aib, LOW);
+  pinMode(Bia, OUTPUT);
+  digitalWrite(Bia, LOW);
+  pinMode(Bib, OUTPUT);
+  digitalWrite(Bib, LOW);
 }
 
 void goForward() {
-  leftLeg.setSpeed(700);
-  leftLeg.step(stepsPerRev / 4);
-  rightLeg.setSpeed(700);
-  rightLeg.step(stepsPerRev / 4);
+  digitalWrite(Aia, LOW);
+  digitalWrite(Aib, HIGH);
+  digitalWrite(Bia, LOW);
+  digitalWrite(Bib, HIGH);
 }
 
 void goBack() {
-  leftLeg.setSpeed(700);
-  leftLeg.step(-stepsPerRev / 4);
-  rightLeg.setSpeed(700);
-  rightLeg.step(-stepsPerRev / 4);
+  digitalWrite(Aia, HIGH);
+  digitalWrite(Aib, LOW);
+  digitalWrite(Bia, HIGH);
+  digitalWrite(Bib, LOW);
 } 
 
 void goRigth() {
-  leftLeg.setSpeed(700);
-  leftLeg.step(stepsPerRev / 4);
-  rightLeg.setSpeed(0);
+  digitalWrite(Aia, LOW);
+  digitalWrite(Aib, HIGH);
+  digitalWrite(Bia, HIGH);
+  digitalWrite(Bib, LOW);
 }
 
 void goLeft() {
-  rightLeg.setSpeed(700);
-  rightLeg.step(stepsPerRev / 4);
-  leftLeg.setSpeed(0);
+  digitalWrite(Aia, HIGH);
+  digitalWrite(Aib, LOW);
+  digitalWrite(Bia, LOW);
+  digitalWrite(Bib, HIGH);
 }
 
 void stopRobot() {
-  leftLeg.setSpeed(0);
-  leftLeg.setSpeed(0);
+  digitalWrite(Aia, LOW);
+  digitalWrite(Aib, LOW);
+  digitalWrite(Bia, LOW);
+  digitalWrite(Bib, LOW);
 }
 
 void rightSpinHead() {  
-  leftLeg.setSpeed(700);
-  leftLeg.step(stepsPerRev / 4);
+  head.setSpeed(700);
+  head.step(stepsPerRev / 4);
 }
 
 void leftSpinHead() {
-  leftLeg.setSpeed(70);
-  leftLeg.step(stepsPerRev / 4);
+  head.setSpeed(70);
+  head.step(stepsPerRev / 4);
 }
 
 void stopSpinHead() {
   head.setSpeed(0);
 }
 
-//Основной цикл программы
-void loop() {  
+
+
+// void song() {
+//     int notes[32] = {
+//     174, 554, 184, 195, 207, 233, 293, 233, 369, 440, 493, 554, 622, 698, 783, 1396, 1174, 1318, 1661, 1760, 2093, 2349, 2637, 2793, 2959, 3135, 1975, 1174, 554, 2217, 659, 783
+//   };
+
+//   int duration[32] = {
+//     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 17, 9, 9, 9, 9, 35, 9, 9, 9
+//   };
+
+//   int delaed[32] = {
+//     10, 10, 10, 10, 10, 20, 10, 10, 10, 20, 10, 10, 10, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19, 10, 380, 20, 90, 39, 10, 10, 10
+//   };
+
+//   for (int i = 0; i < 58; i++) {  
+//       tone(tonePin, notes[i], duration[i]);
+//       delay(delaed[i]);
+//     };
+// }
+
+String getValue(String data, char separator, int index)
+{
+  int found = 0;
+  int strIndex[] = {0, -1};
+  int maxIndex = data.length()-1;
+
+  for(int i=0; i<=maxIndex && found<=index; i++){
+    if(data.charAt(i) == separator || i == maxIndex){
+      found++;
+      strIndex[0] = strIndex[1]+1;
+      strIndex[1] = (i == maxIndex) ? i+1 : i;
+    }
+  }
+
+  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
+
+int* getIntArr(String str) {
+  String input = "3,2,7,12,14,2";  
+  int * intArray = new int[str.length()];  
+  int arrayCounter = 0; //needed
+  for (int i = 0; i < input.length(); ++i) {  
+    if(input[i] != ',') {  //Notice the single quotes for a character  
+      intArray[arrayCounter] = input[i];  
+      arrayCounter++;
+    }  
+  }
+
+  return intArray;  
+}
+
+void convertSong(String message) {
+  int* notes = getIntArr(getValue(message, ';', 0));
+  int* durations = getIntArr(getValue(message, ';', 1));
+  int* delays = getIntArr(getValue(message, ';', 2));
+
+
+  for (int i = 0; i < 58; i++) {  
+    tone(tonePin, notes[i], durations[i]);
+    delay(delays[i]);
+  };
+  noTone(tonePin);
+}
+
+
+
+void loop() {
   if (Serial.available() > 0) {
+    String message = Serial.readStringUntil('\n');
+
     digitalWrite(ledBlue, HIGH);
     digitalWrite(ledRed, HIGH);
     
-    incomingbyte = Serial.read();
+    Serial.print(message);
 
-    if (incomingbyte == "0") {
-      isAuto = false;
-      stopRobot();
-    }
+    // // incomingbyte = Serial.read();
+    // if (message.length() > 1) {
+      convertSong(message);
+      Serial.println("Yeah");
+    // }
 
-    if (incomingbyte == "1") {
-      isAuto = false;
-      goForward();
-    }
+    // if (message == "0") {
+    //   stopRobot();
+    // }
 
-    if (incomingbyte == "2") {
-      isAuto = false;
-      goBack();
-    }
+    // if (message == "1") {
+    //   goForward();
+    // }
 
-    if (incomingbyte == "3") {
-      isAuto = false;
-      goRigth();
-    }
+    // if (message == "2") {
+    //   goBack();
+    // }
+
+    // if (message == "3") {
+    //   goRigth();
+    // }
     
-    if (incomingbyte == "4") {
-      isAuto = false;
-      goLeft();
-    }
+    // if (message == "4") {
+    //   goLeft();
+    // }
 
-    if (incomingbyte == "d") {
-      // crying song
-    }
-
-    if (incomingbyte == "e") {
-      //question song
-    }
-
-    if (incomingbyte == "f") {
-      // surprise song
-    }
-
-    if (incomingbyte == "g") {
-      // quote song
-    }
-
-    if (incomingbyte == "h") {
-      // offer song
-    }
-
-    if (incomingbyte == "i") {
-      // broken song
-    }
-
-    if (incomingbyte == "6") {
-      // autopilot
-      isAuto = true;
-    }
+    // if (message == "a") {
+    //   rightSpinHead();
+    // }
     
-    if (incomingbyte == "7") {
-      // blue light
-    }
+    // if (message == "b") {
+    //   leftSpinHead();
+    // }
 
-    if (incomingbyte == "8") {
-      // Red light
-    }
+    // if (message == "c") {
+    //   stopSpinHead();
+    // }
+
+    // // if (incomingbyte[0] == "d") {
+    // //   songConverter(incomingbyte);
+    //   // crying song
+    // // }
+
+    // if (message == "7") {
+    //   digitalWrite(ledBlue, HIGH);
+    //   digitalWrite(ledRed, LOW);
+    // }
+
+    // if (message == "8") {
+    //   digitalWrite(ledRed, HIGH);
+    //   digitalWrite(ledBlue, LOW);
+    // }
     
-    if (incomingbyte == "9") {
-      // led and blue light
-    }
-
-    if (incomingbyte == "a") {
-      rightSpinHead();
-    }
-    
-    if (incomingbyte == "b") {
-      leftSpinHead();
-    }
-
-    if (incomingbyte == "c") {
-      stopSpinHead();
-    }
-  } 
-
-  if (isAuto == true) {
-    digitalWrite(triggerPin, LOW);
-    delayMicroseconds(2);
-    digitalWrite(triggerPin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(triggerPin, LOW);
-    
-    duration = pulseIn(echoPin, HIGH);
-    long distanceCm = Distance(duration);
-
-    if (distanceCm < 50) {
-      goRigth();
-      delay(100);
-      goForward();
-    }
-
-    goForward();
-    delay(1000);
+    // if (message == "9") {
+    //   digitalWrite(ledRed, HIGH);
+    //   digitalWrite(ledBlue, HIGH);
+    // }
   }
 }
