@@ -4,37 +4,29 @@
 
 char incomingbyte;
 
-const int Aia = 9;
-const int Aib = 10;
-const int Bia = 11;
-const int Bib = 12;
+const int Aia = A4;
+const int Aib = A5;
+const int Bia = A2;
+const int Bib = A3;
 
-const int headMotor1 = A0;
-const int headMotor2 = 13; 
-const int headMotor3 = 12;
-const int headMotor4 = 11;
+const int headMotor1 = 9 ;
+const int headMotor2 = 10; 
+const int headMotor3 = 11;
+const int headMotor4 = 12;
 
-const int ledRed = 6;
-const int ledBlue = A2;
+const int ledRed = 3;
+const int ledBlue = 4;
 
-const int triggerPin = 2;
-const int echoPin = 3;
+const int tonePin = 2;
 
-const int tonePin = 9;
-
-long duration = 0;
-
-const int stepsPerRev = 32;
+const int stepsPerRev = 24;
 
 Stepper head(stepsPerRev, headMotor1, headMotor2, headMotor3, headMotor4);
+Stepper headRev(stepsPerRev, headMotor1, headMotor3, headMotor2, headMotor4);
+
 
 void setup() {
   Serial.begin(9600);
-  Serial.begin(9600);
-
-
-  pinMode(triggerPin, OUTPUT);
-  pinMode(echoPin, INPUT);
 
   pinMode(ledBlue, OUTPUT);
   digitalWrite(ledBlue, LOW);
@@ -87,86 +79,20 @@ void stopRobot() {
 }
 
 void rightSpinHead() {  
-  head.setSpeed(700);
-  head.step(stepsPerRev / 4);
+  headRev.setSpeed(600);
+  headRev.step(stepsPerRev / 4);
 }
 
 void leftSpinHead() {
-  head.setSpeed(70);
+
+  head.setSpeed(600);
   head.step(stepsPerRev / 4);
 }
 
 void stopSpinHead() {
   head.setSpeed(0);
+  headRev.setSpeed(0);
 }
-
-
-
-// void song() {
-//     int notes[32] = {
-//     174, 554, 184, 195, 207, 233, 293, 233, 369, 440, 493, 554, 622, 698, 783, 1396, 1174, 1318, 1661, 1760, 2093, 2349, 2637, 2793, 2959, 3135, 1975, 1174, 554, 2217, 659, 783
-//   };
-
-//   int duration[32] = {
-//     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 17, 9, 9, 9, 9, 35, 9, 9, 9
-//   };
-
-//   int delaed[32] = {
-//     10, 10, 10, 10, 10, 20, 10, 10, 10, 20, 10, 10, 10, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10, 19, 10, 380, 20, 90, 39, 10, 10, 10
-//   };
-
-//   for (int i = 0; i < 58; i++) {  
-//       tone(tonePin, notes[i], duration[i]);
-//       delay(delaed[i]);
-//     };
-// }
-
-String getValue(String data, char separator, int index)
-{
-  int found = 0;
-  int strIndex[] = {0, -1};
-  int maxIndex = data.length()-1;
-
-  for(int i=0; i<=maxIndex && found<=index; i++){
-    if(data.charAt(i) == separator || i == maxIndex){
-      found++;
-      strIndex[0] = strIndex[1]+1;
-      strIndex[1] = (i == maxIndex) ? i+1 : i;
-    }
-  }
-
-  return found>index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
-
-
-int* getIntArr(String str) {
-  String input = "3,2,7,12,14,2";  
-  int * intArray = new int[str.length()];  
-  int arrayCounter = 0; //needed
-  for (int i = 0; i < input.length(); ++i) {  
-    if(input[i] != ',') {  //Notice the single quotes for a character  
-      intArray[arrayCounter] = input[i];  
-      arrayCounter++;
-    }  
-  }
-
-  return intArray;  
-}
-
-void convertSong(String message) {
-  int* notes = getIntArr(getValue(message, ';', 0));
-  int* durations = getIntArr(getValue(message, ';', 1));
-  int* delays = getIntArr(getValue(message, ';', 2));
-
-
-  for (int i = 0; i < 58; i++) {  
-    tone(tonePin, notes[i], durations[i]);
-    delay(delays[i]);
-  };
-  noTone(tonePin);
-}
-
-
 
 void loop() {
   if (Serial.available() > 0) {
@@ -175,64 +101,57 @@ void loop() {
     digitalWrite(ledBlue, HIGH);
     digitalWrite(ledRed, HIGH);
     
-    Serial.print(message);
 
-    // // incomingbyte = Serial.read();
-    // if (message.length() > 1) {
-      convertSong(message);
-      Serial.println("Yeah");
-    // }
+    if (message.length() > 1) {
+      // convertSong(message);
+      Serial.print(message);
+    }
 
-    // if (message == "0") {
-    //   stopRobot();
-    // }
+    if (message == "0") {
+      stopRobot();
+    }
 
-    // if (message == "1") {
-    //   goForward();
-    // }
+    if (message == "1") {
+      goForward();
+    }
 
-    // if (message == "2") {
-    //   goBack();
-    // }
+    if (message == "2") {
+      goBack();
+    }
 
-    // if (message == "3") {
-    //   goRigth();
-    // }
+    if (message == "3") {
+      goRigth();
+    }
     
-    // if (message == "4") {
-    //   goLeft();
-    // }
+    if (message == "4") {
+      goLeft();
+    }
 
-    // if (message == "a") {
-    //   rightSpinHead();
-    // }
+    if (message == "a") {
+      rightSpinHead();
+    }
     
-    // if (message == "b") {
-    //   leftSpinHead();
-    // }
+    if (message == "b") {
+      leftSpinHead();
+    }
 
-    // if (message == "c") {
-    //   stopSpinHead();
-    // }
+    if (message == "c") {
+      stopSpinHead();
+    }
 
-    // // if (incomingbyte[0] == "d") {
-    // //   songConverter(incomingbyte);
-    //   // crying song
-    // // }
+    if (message == "7") {
+      digitalWrite(ledBlue, HIGH);
+      digitalWrite(ledRed, LOW);
+    }
 
-    // if (message == "7") {
-    //   digitalWrite(ledBlue, HIGH);
-    //   digitalWrite(ledRed, LOW);
-    // }
-
-    // if (message == "8") {
-    //   digitalWrite(ledRed, HIGH);
-    //   digitalWrite(ledBlue, LOW);
-    // }
+    if (message == "8") {
+      digitalWrite(ledRed, HIGH);
+      digitalWrite(ledBlue, LOW);
+    }
     
-    // if (message == "9") {
-    //   digitalWrite(ledRed, HIGH);
-    //   digitalWrite(ledBlue, HIGH);
-    // }
+    if (message == "9") {
+      digitalWrite(ledRed, HIGH);
+      digitalWrite(ledBlue, HIGH);
+    }
   }
 }
