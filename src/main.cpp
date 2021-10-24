@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <Tone.h>
 #include <Stepper.h>
 
 char incomingbyte;
@@ -17,9 +16,8 @@ const int headMotor4 = 12;
 const int ledRed = 3;
 const int ledBlue = 4;
 
-const int tonePin = 2;
-
 const int stepsPerRev = 24;
+
 
 Stepper head(stepsPerRev, headMotor1, headMotor2, headMotor3, headMotor4);
 Stepper headRev(stepsPerRev, headMotor1, headMotor3, headMotor2, headMotor4);
@@ -27,9 +25,8 @@ Stepper headRev(stepsPerRev, headMotor1, headMotor3, headMotor2, headMotor4);
 
 void setup() {
   Serial.begin(9600);
-
   pinMode(ledBlue, OUTPUT);
-  digitalWrite(ledBlue, LOW);
+  pinMode(ledBlue, OUTPUT);
   pinMode(ledRed, OUTPUT);
   digitalWrite(ledRed, LOW);
 
@@ -42,6 +39,7 @@ void setup() {
   pinMode(Bib, OUTPUT);
   digitalWrite(Bib, LOW);
 }
+
 
 void goForward() {
   digitalWrite(Aia, LOW);
