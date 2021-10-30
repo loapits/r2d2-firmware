@@ -2,26 +2,20 @@
 #include <Stepper.h>
 
 char incomingbyte;
-
 const int Aia = A4;
 const int Aib = A5;
 const int Bia = A2;
 const int Bib = A3;
-
-const int headMotor1 = 9 ;
+const int headMotor1 = 9;
 const int headMotor2 = 10; 
 const int headMotor3 = 11;
 const int headMotor4 = 12;
-
 const int ledRed = 3;
 const int ledBlue = 4;
-
 const int stepsPerRev = 24;
-
 
 Stepper head(stepsPerRev, headMotor1, headMotor2, headMotor3, headMotor4);
 Stepper headRev(stepsPerRev, headMotor1, headMotor3, headMotor2, headMotor4);
-
 
 void setup() {
   Serial.begin(9600);
@@ -39,7 +33,6 @@ void setup() {
   pinMode(Bib, OUTPUT);
   digitalWrite(Bib, LOW);
 }
-
 
 void goForward() {
   digitalWrite(Aia, LOW);
@@ -82,7 +75,6 @@ void rightSpinHead() {
 }
 
 void leftSpinHead() {
-
   head.setSpeed(600);
   head.step(stepsPerRev / 4);
 }
@@ -98,7 +90,6 @@ void loop() {
 
     digitalWrite(ledBlue, HIGH);
     digitalWrite(ledRed, HIGH);
-    
 
     if (message.length() > 1) {
       // convertSong(message);
