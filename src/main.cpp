@@ -1,5 +1,5 @@
-#include <Arduino.h>
-#include <Stepper.h>
+ #include <Arduino.h>
+ #include <Stepper.h>
 
 char incomingbyte;
 const int Aia = A4;
@@ -12,10 +12,9 @@ const int headMotor3 = 11;
 const int headMotor4 = 12;
 const int ledRed = 3;
 const int ledBlue = 4;
-const int stepsPerRev = 24;
+const int stepsPerRevolution = 2048;
 
-Stepper head(stepsPerRev, headMotor1, headMotor2, headMotor3, headMotor4);
-Stepper headRev(stepsPerRev, headMotor1, headMotor3, headMotor2, headMotor4);
+Stepper motor(stepsPerRevolution, headMotor1, headMotor3, headMotor2, headMotor4);
 
 void setup() {
   Serial.begin(9600);
@@ -32,6 +31,13 @@ void setup() {
   digitalWrite(Bia, LOW);
   pinMode(Bib, OUTPUT);
   digitalWrite(Bib, LOW);
+
+  pinMode(headMotor1, OUTPUT);
+  pinMode(headMotor2, OUTPUT);
+  pinMode(headMotor3, OUTPUT);
+  pinMode(headMotor4, OUTPUT);
+
+
 }
 
 void goForward() {
@@ -70,77 +76,75 @@ void stopRobot() {
 }
 
 void rightSpinHead() {  
-  headRev.setSpeed(600);
-  headRev.step(stepsPerRev / 4);
+  motor.setSpeed(5);
+  motor.step(stepsPerRevolution);
 }
 
 void leftSpinHead() {
-  head.setSpeed(600);
-  head.step(stepsPerRev / 4);
+  motor.setSpeed(5);
+  motor.step(-stepsPerRevolution);
 }
 
 void stopSpinHead() {
-  head.setSpeed(0);
-  headRev.setSpeed(0);
+  digitalWrite(9, LOW);
+  digitalWrite(10, LOW);
+  digitalWrite(11, LOW);
+  digitalWrite(12, LOW); 
 }
 
 void loop() {
   if (Serial.available() > 0) {
-    String message = Serial.readStringUntil('\n');
+    incomingbyte = Serial.read();
 
     digitalWrite(ledBlue, HIGH);
     digitalWrite(ledRed, HIGH);
 
-    if (message.length() > 1) {
-      // convertSong(message);
-      Serial.print(message);
-    }
-
-    if (message == "0") {
+    if (incomingbyte == '0') {
       stopRobot();
     }
 
-    if (message == "1") {
+    if (incomingbyte == '1') {
       goForward();
     }
 
-    if (message == "2") {
+    if (incomingbyte == '2') {
       goBack();
     }
 
-    if (message == "3") {
+    if (incomingbyte == '3') {
       goRigth();
     }
     
-    if (message == "4") {
+    if (incomingbyte == '4') {
       goLeft();
     }
 
-    if (message == "a") {
+    if (incomingbyte == 'a') {
       rightSpinHead();
     }
     
-    if (message == "b") {
+    if (incomingbyte == 'b') {
       leftSpinHead();
     }
 
-    if (message == "c") {
+    if (incomingbyte == 'c') {
       stopSpinHead();
     }
 
-    if (message == "7") {
+    if (incomingbyte == '7') {
       digitalWrite(ledBlue, HIGH);
       digitalWrite(ledRed, LOW);
     }
 
-    if (message == "8") {
+    if (incomingbyte == '8') {
       digitalWrite(ledRed, HIGH);
       digitalWrite(ledBlue, LOW);
     }
     
-    if (message == "9") {
+    if (incomingbyte == '9') {
       digitalWrite(ledRed, HIGH);
       digitalWrite(ledBlue, HIGH);
     }
   }
 }
+
