@@ -31,13 +31,7 @@ void setup() {
   digitalWrite(Bia, LOW);
   pinMode(Bib, OUTPUT);
   digitalWrite(Bib, LOW);
-
-  pinMode(headMotor1, OUTPUT);
-  pinMode(headMotor2, OUTPUT);
-  pinMode(headMotor3, OUTPUT);
-  pinMode(headMotor4, OUTPUT);
-
-
+  motor.setSpeed(12);
 }
 
 void goForward() {
@@ -75,21 +69,32 @@ void stopRobot() {
   digitalWrite(Bib, LOW);
 }
 
-void rightSpinHead() {  
-  motor.setSpeed(5);
-  motor.step(stepsPerRevolution);
+void rightSpinHead() { 
+  stopRobot(); 
+  motor.step(stepsPerRevolution / 4);
+  delay(100);
+  motor.step(-stepsPerRevolution / 4);
+  digitalWrite(headMotor1, LOW);
+  digitalWrite(headMotor2, LOW);
+  digitalWrite(headMotor3, LOW);
+  digitalWrite(headMotor4, LOW); 
 }
 
 void leftSpinHead() {
-  motor.setSpeed(5);
-  motor.step(-stepsPerRevolution);
+  stopRobot();
+  motor.step(-stepsPerRevolution / 4);
+  motor.step(stepsPerRevolution / 4);
+  digitalWrite(headMotor1, LOW);
+  digitalWrite(headMotor2, LOW);
+  digitalWrite(headMotor3, LOW);
+  digitalWrite(headMotor4, LOW); 
 }
 
 void stopSpinHead() {
-  digitalWrite(9, LOW);
-  digitalWrite(10, LOW);
-  digitalWrite(11, LOW);
-  digitalWrite(12, LOW); 
+  digitalWrite(headMotor1, LOW);
+  digitalWrite(headMotor2, LOW);
+  digitalWrite(headMotor3, LOW);
+  digitalWrite(headMotor4, LOW); 
 }
 
 void loop() {
