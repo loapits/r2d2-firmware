@@ -35,31 +35,31 @@ void setup() {
 }
 
 void goForward() {
-  digitalWrite(Aia, LOW);
-  digitalWrite(Aib, HIGH);
-  digitalWrite(Bia, LOW);
-  digitalWrite(Bib, HIGH);
-}
-
-void goBack() {
   digitalWrite(Aia, HIGH);
   digitalWrite(Aib, LOW);
   digitalWrite(Bia, HIGH);
   digitalWrite(Bib, LOW);
+}
+
+void goBack() {
+  digitalWrite(Aia, LOW);
+  digitalWrite(Aib, HIGH);
+  digitalWrite(Bia, LOW);
+  digitalWrite(Bib, HIGH);
 } 
 
 void goRigth() {
-  digitalWrite(Aia, LOW);
-  digitalWrite(Aib, HIGH);
-  digitalWrite(Bia, HIGH);
-  digitalWrite(Bib, LOW);
-}
-
-void goLeft() {
   digitalWrite(Aia, HIGH);
   digitalWrite(Aib, LOW);
   digitalWrite(Bia, LOW);
   digitalWrite(Bib, HIGH);
+}
+
+void goLeft() {
+  digitalWrite(Aia, LOW);
+  digitalWrite(Aib, HIGH);
+  digitalWrite(Bia, HIGH);
+  digitalWrite(Bib, LOW);
 }
 
 void stopRobot() {
@@ -109,18 +109,22 @@ void loop() {
     }
 
     if (incomingbyte == '1') {
+      Serial.write("forward");
       goForward();
     }
 
     if (incomingbyte == '2') {
+      Serial.write("back");
       goBack();
     }
 
     if (incomingbyte == '3') {
+      Serial.write("right");
       goRigth();
     }
     
     if (incomingbyte == '4') {
+      Serial.write("left");
       goLeft();
     }
 
